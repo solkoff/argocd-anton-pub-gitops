@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argo-application
+  namespace: argocd # the same where the Ardo CD is placed
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/solkoff/argocd-anton-pub-application.git #public repo, no need for password (suggestion->add .git)
+    targetRevision: HEAD #main
+    path: myapp #directory inside the repo with k8s code
+  destination: 
+    server: https://kubernetes.default.svc #since the service is inside the cluster
+    namespace: prod-anton
+
+  syncPolicy: # argocd will create a namespace if needed
+    syncOptions:
+    - CreateNamespace=true
+    - Validate=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true
+
+    automated:
+      selfHeal: true
+      prune: true
