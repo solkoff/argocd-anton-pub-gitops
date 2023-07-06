@@ -1,0 +1,9 @@
+---
+global:
+  image:
+    tag: "v2.7.7" # latest ArgoCD version
+
+
+server:
+  extraArgs:
+  - --insecure
