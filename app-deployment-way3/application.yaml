@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: git@github.com:solkoff/argocd-anton-pub-application-private.git #private repo, no need for password (suggestion->add .git)
     targetRevision: HEAD #main latest commit
-    path: myapp #directory inside the repo with k8s code
+    path: myapp1 #directory inside the repo with k8s code
   destination: 
     server: https://kubernetes.default.svc #since the service is inside the cluster
 
