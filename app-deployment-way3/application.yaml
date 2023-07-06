@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argo-application
+  namespace: argocd # the same where the Ardo CD is placed
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io # will delete ARGOCD app and K8s app at the same time
+spec:
+  project: default 
+
+  source:
+    repoURL: git@github.com:solkoff/argocd-anton-pub-application-private.git #private repo, no need for password (suggestion->add .git)
+    targetRevision: HEAD #main latest commit
+    path: myapp #directory inside the repo with k8s code
+  destination: 
+    server: https://kubernetes.default.svc #since the service is inside the cluster
+
+  syncPolicy: # argocd will create a namespace if needed
+    syncOptions:
+    - CreateNamespace=true
+    - Validate=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true
+
+    automated:
+      selfHeal: true
+      prune: true
