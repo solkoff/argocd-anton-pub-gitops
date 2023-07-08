@@ -14,7 +14,6 @@ spec:
     path:  kustomize/overlays/dev/ #directory inside the repo with k8s code
   destination: 
     server: https://kubernetes.default.svc #since the service is inside the cluster
-    namespace: prod-anton
 
   syncPolicy: # argocd will create a namespace if needed
     syncOptions:
