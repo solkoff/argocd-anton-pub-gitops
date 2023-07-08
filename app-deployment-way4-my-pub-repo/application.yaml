@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: metrics-server2
+  namespace: argocd # the same where the Ardo CD is placed
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io # will delete ARGOCD app and K8s app at the same time
+spec:
+  project: default 
+
+  source:
+    repoURL: https://github.com/solkoff/argocd-devops-journey.git
+    targetRevision: HEAD #main latest commit
+    path: helm-webapp
+    helm:
+      version: v3
+      releaseName: sergei-mertics
+      passCredentials: false
+      valueFiles:  #it should be in the same directory as a code
+      - values-dev.yaml
+
+  destination: 
+    server: https://kubernetes.default.svc #since the service is inside the cluster
+    namespace: mertics
+
+  syncPolicy: # argocd will create a namespace if needed
+    syncOptions:
+    - CreateNamespace=true
+    - Validate=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true
+
+    automated:
+      selfHeal: true
+      prune: true
