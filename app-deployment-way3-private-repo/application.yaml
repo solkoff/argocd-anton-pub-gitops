@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: argo-application
+  name: private-repo
   namespace: argocd # the same where the Ardo CD is placed
   finalizers:
     - resources-finalizer.argocd.argoproj.io # will delete ARGOCD app and K8s app at the same time

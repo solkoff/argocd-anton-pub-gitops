@@ -9,6 +9,8 @@ new_version=$1
 echo "================================"
 echo "new version is: ${new_version}"
 echo "================================"
+echo "creating a new image with a tag ${new_version}"
+echo "================================"
 
 # tag a new image version
 nerdctl tag nginx:1.23 solkoff/nginx:${new_version}
@@ -18,9 +20,8 @@ nerdctl push solkoff/nginx:${new_version}
 
 temp_dir=$(mktemp -d)
 echo "================================"
-echo "Temp directory is: ${temp_dir}"
+echo "Creating temp directory. Temp directory is: ${temp_dir}"
 echo "================================"
-
 echo "Clonning repo..."
 echo "================================"
 
@@ -28,10 +29,11 @@ echo "================================"
 git clone https://github.com/solkoff/argocd-anton-pub-application.git ${temp_dir}
 
 #make changes to tags
-sed -i '' -e "s/docker.io\/solkoff\/nginx:.*/docker.io\/solkoff\/nginx:${new_version}/g" ${temp_dir}/myapp/deployment.yaml
+sed -i '' -e "s/docker.io\/solkoff\/nginx:.*/docker.io\/solkoff\/nginx:${new_version}/g" ${temp_dir}/myapp-initial/deployment.yaml
 
 echo "================================"
-echo "commining changes"
+echo "commining changes to the Repo"
+echo "================================"
 #commit the changes
 cd ${temp_dir}
 git add .
@@ -40,5 +42,9 @@ git push
 
 echo "================================"
 echo "deleting temporary directory"
+echo "================================"
 #delete the temp directory
 rm -Rf ${temp_dir}
+echo "================================"
+echo "done"
+echo "================================"

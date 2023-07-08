@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: metrics-server1
+  name: heml-metrics-server1
   namespace: argocd # the same where the Ardo CD is placed
   finalizers:
     - resources-finalizer.argocd.argoproj.io # will delete ARGOCD app and K8s app at the same time

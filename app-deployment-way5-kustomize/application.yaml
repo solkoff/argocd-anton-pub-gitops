@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: single-app
+  name: kustomize
   namespace: argocd # the same where the Ardo CD is placed
   finalizers:
     - resources-finalizer.argocd.argoproj.io # will delete ARGOCD app and K8s app at the same time
@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: https://github.com/solkoff/argocd-anton-pub-application.git #public repo, no need for password (suggestion->add .git)
     targetRevision: HEAD #main latest commit
-    path: myapp-initial/ #directory inside the repo with k8s code
+    path:  kustomize/overlays/dev/ #directory inside the repo with k8s code
   destination: 
     server: https://kubernetes.default.svc #since the service is inside the cluster
     namespace: prod-anton
