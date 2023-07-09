@@ -1,0 +1,7 @@
+---
+image: 
+  tag: "v0.12.2"
+
+metrics:
+  # -- Deploy metrics service
+  enabled: "true"
