@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kustomize-with-updater
+  namespace: argocd # the same where the Ardo CD is placed
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: docker.io/solkoff/nginx:~0.1 # to watch this DockerRepo, and upgrade it the patch version increases
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io # will delete ARGOCD app and K8s app at the same time
+spec:
+  project: default 
+
+  source:
+    repoURL: git@github.com:solkoff/argocd-anton-application-private-with-updater.git #private repo
+    targetRevision: main #recommented to use branches with image updater
+    path:  kustomize/overlays/dev/ #directory inside the repo with k8s code
+  destination: 
+    server: https://kubernetes.default.svc #since the service is inside the cluster
+
+  syncPolicy: # argocd will create a namespace if needed
+    syncOptions:
+    - CreateNamespace=true
+    - Validate=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true
+
+    automated:
+      selfHeal: true
+      prune: true
