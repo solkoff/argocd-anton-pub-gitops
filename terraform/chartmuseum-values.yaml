@@ -1,0 +1,8 @@
+---
+env:
+  open:
+    DISABLE_API: false
+    # allow chart versions to be re-uploaded
+  
+persistence:
+  enabled: false

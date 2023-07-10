@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: heml-repo-as-helmchart
+  namespace: argocd # the same where the Ardo CD is placedv\
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: docker.io/solkoff/nginx:~0.5 # to watch this DockerRepo, and upgrade it the patch version increases
+    argocd-image-updater.argoproj.io/write-back-method: git # it creates a git commit
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io # will delete ARGOCD app and K8s app at the same time
+spec:
+  project: default 
+
+  source:
+    repoURL: http://chartmuseum.chartmuseum:57920
+    targetRevision: 0.1.0
+    path: myapp-chart
+    helm:
+      version: v3
+      releaseName: myapp-chart
+      passCredentials: false 
+      parameters: # overwrite default variables
+        - name: "image.repositary"
+          value: solkoff/nginx
+        - name: image.tag
+          value: 0.1.0
+  destination: 
+    server: https://kubernetes.default.svc #since the service is inside the cluster
+    namespace: prod
+
+
+  syncPolicy: # argocd will create a namespace if needed
+    syncOptions:
+    - CreateNamespace=true
+    - Validate=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true
+
+    automated:
+      selfHeal: true
+      prune: true
