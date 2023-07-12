@@ -1,0 +1,1 @@
+deploy just 1 application
