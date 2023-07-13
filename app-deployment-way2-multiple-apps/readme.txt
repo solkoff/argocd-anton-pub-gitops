@@ -1,1 +1,0 @@
-deploy several k8s and ArgoCd applications
