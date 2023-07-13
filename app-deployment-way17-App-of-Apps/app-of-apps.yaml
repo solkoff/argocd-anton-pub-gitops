@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app-of-apps
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io # will delete ARGOCD app and K8s app at the same time
+
+spec:
+  project: default
+
+  destination:
+    name: in-cluster
+    namespace: argocd
+  source:
+    repoURL: 'https://github.com/solkoff/argocd-anton-application-public.git'
+    path: app-of-apps2/apps/
+    targetRevision: HEAD
+  
+  syncPolicy: # argocd will create a namespace if needed
+        syncOptions:
+        - CreateNamespace=true
+        - Validate=true
+        - PrunePropagationPolicy=foreground
+        - PruneLast=true
+
+        automated:
+          selfHeal: true
+          prune: true
