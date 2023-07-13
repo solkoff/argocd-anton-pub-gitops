@@ -1,0 +1,44 @@
+#did not actually deployed this one
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: myapps
+spec:
+  generators:
+  - scmProvider:
+      gitlab:
+        # The base GitLab group to scan.  You can either use the group id or the full namespaced path.
+        group: "8675309"
+        # For self-hosted GitLab:
+        api: https://gitlab.example.com/
+        # If true, scan every branch of every repository. If false, scan only the default branch. Defaults to false.
+        allBranches: true
+        # If true, recurses through subgroups. If false, it searches only in the base group. Defaults to false.
+        includeSubgroups: true
+        # Reference to a Secret containing an access token. (optional)
+        tokenRef:
+          secretName: gitlab-token
+          key: token
+  template:
+    metadata:
+      name: '{{ repository }}'
+    spec:
+      source:
+        repoURL: '{{ url }}'
+        targetRevision: '{{ branch }}'
+        path: kubernetes/
+      project: default
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: default
+    
+      syncPolicy:
+        syncOptions:
+        - CreateNamespace=true
+        - Validate=true
+        - PrunePropagationPolicy=foreground
+        - PruneLast=true
+
+        automated:
+          selfHeal: true
+          prune: true

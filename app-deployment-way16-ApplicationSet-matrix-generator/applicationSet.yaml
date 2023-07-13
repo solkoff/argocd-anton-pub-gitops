@@ -1,0 +1,42 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: matrix-generator
+  namespace: argocd
+spec:
+  generators:
+  - matrix:  # use 2 generators
+      generators:
+      - git:  # 1st generator
+          repoURL: https://github.com/solkoff/argocd-anton-application-public.git
+          revision: HEAD
+          directories:
+          - path: myapp-initial
+          - path: kustomize
+      - clusters: # 2nd generator
+          selector:
+            matchLabels:
+              name: sergei  # it should be Cluster Label (not annotations)
+  template:
+    metadata:
+      name: '{{path.basename}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/solkoff/argocd-anton-application-public.git
+        targetRevision: HEAD
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{path.basename}}'
+      
+      syncPolicy:
+        syncOptions:
+        - CreateNamespace=true
+        - Validate=true
+        - PrunePropagationPolicy=foreground
+        - PruneLast=true
+
+        automated:
+          selfHeal: true
+          prune: true
