@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: appset1
+  namespace: argocd
+spec:
+  generators:
+  - list: # simple list of elements
+      elements:
+      - cluster: sergeiiiiii
+        url: https://35.193.220.208
+        namespace: aaaa
+      - cluster: default
+        url: https://kubernetes.default.svc
+        namespace: bbb
+  template: # like Application but with the parameters 
+    metadata:
+      name: 'demo-{{cluster}}-app'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/solkoff/argocd-anton-application-public.git
+        targetRevision: HEAD
+        path: myapp-initial/
+      destination:
+        server: '{{url}}'
+        namespace: '{{namespace}}'
+
+      
+      syncPolicy: # argocd will create a namespace if needed
+        syncOptions:
+        - CreateNamespace=true
+        - Validate=true
+        - PrunePropagationPolicy=foreground
+        - PruneLast=true
+
+        automated:
+          selfHeal: true
+          prune: true

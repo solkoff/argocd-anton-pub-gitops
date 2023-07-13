@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: cluster-annotations
+  namespace: argocd
+spec:
+  generators:
+  - clusters:
+      selector:
+        matchLabels:
+          name: sergei  # it should be Cluster Label (not annotations)
+  template: 
+    metadata:
+      name: '{{name}}-demo'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/solkoff/argocd-anton-application-public.git
+        targetRevision: HEAD
+        path: myapp-initial/
+      destination:
+        server: "{{server}}"
+        namespace: cluster
+
+      
+      syncPolicy: # argocd will create a namespace if needed
+        syncOptions:
+        - CreateNamespace=true
+        - Validate=true
+        - PrunePropagationPolicy=foreground
+        - PruneLast=true
+
+        automated:
+          selfHeal: true
+          prune: true

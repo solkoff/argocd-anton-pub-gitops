@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: appset-cluster-reg
+  namespace: argocd
+spec:
+  generators:
+  - clusters: {} ### all clusters
+  template: # like Application but with the parameters 
+    metadata:
+      name: '{{name}}-demo'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/solkoff/argocd-anton-application-public.git
+        targetRevision: HEAD
+        path: myapp-initial/
+      destination:
+        server: "{{server}}"
+        namespace: cluster
+
+      
+      syncPolicy: # argocd will create a namespace if needed
+        syncOptions:
+        - CreateNamespace=true
+        - Validate=true
+        - PrunePropagationPolicy=foreground
+        - PruneLast=true
+
+        automated:
+          selfHeal: true
+          prune: true
